@@ -1,0 +1,24 @@
+{
+  "name": "home-inspection-india",
+  "version": "1.0.0",
+  "description": "Professional Home Inspection Services Website",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "home-inspection",
+    "property-inspection",
+    "india"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^7.2.7"
+  },
+  "dependencies": {
+    "firebase": "^12.6.0"
+  }
+}

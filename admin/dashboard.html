@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Ghar ka Parishkar</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar {
+            width: 250px;
+            background-color: var(--color-bg-dark);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: var(--spacing-xl);
+        }
+
+        .sidebar h3 {
+            color: white;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: var(--spacing-2xl);
+        }
+
+        .nav-link {
+            display: block;
+            color: rgba(255, 255, 255, 0.7);
+            padding: var(--spacing-md) 0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: white;
+        }
+
+        .stat-card {
+            background: white;
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: white;
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h3>Admin Panel</h3>
+        <nav style="margin-top: var(--spacing-2xl);">
+            <a href="dashboard.html" class="nav-link active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+
+            <a href="enquiry.html" class="nav-link"><i class="fas fa-question-circle"></i> Enquiries</a>
+            <a href="#" class="nav-link"><i class="fas fa-users"></i> Users</a>
+            <a href="reports.html" class="nav-link"><i class="fas fa-file-alt"></i> Reports</a>
+            <a href="settings.html" class="nav-link"><i class="fas fa-cog"></i> Settings</a>
+            <a href="../index.html" class="nav-link" style="margin-top: var(--spacing-2xl); color: #ff6b7a;"><i
+                    class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <h1 style="margin-bottom: var(--spacing-xl);">Dashboard</h1>
+
+        <div class="grid grid-3" style="margin-bottom: var(--spacing-2xl);">
+            <div class="stat-card">
+                <div>
+                    <div>Total Inspections</div>
+                    <div class="stat-number" id="stat-total-inspections">0</div>
+                </div>
+                <i class="fas fa-clipboard-check" style="font-size: 2.5rem; color: var(--color-border);"></i>
+            </div>
+            <div class="stat-card">
+                <div>
+                    <div>Pending Requests</div>
+                    <div class="stat-number" id="stat-pending-requests">0</div>
+                </div>
+                <i class="fas fa-clock" style="font-size: 2.5rem; color: var(--color-border);"></i>
+            </div>
+        </div>
+
+        <div class="section">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+                <h2>Contact Messages</h2>
+                <button onclick="clearMessages()"
+                    style="font-size: 0.8rem; color: #ef4444; border: 1px solid #ef4444; background: transparent; padding: 4px 8px; border-radius: 4px; cursor: pointer;">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table id="messagesTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Email / Phone</th>
+                            <th>Service</th>
+                            <th>Message</th>
+                            <th>Payment</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be populated by JS -->
+                    </tbody>
+                </table>
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p>No messages found</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function loadMessages() {
+            const messages = JSON.parse(localStorage.getItem('mhc_contact_messages') || '[]');
+            const tbody = document.querySelector('#messagesTable tbody');
+            const emptyState = document.getElementById('emptyState');
+            const msgCount = document.getElementById('msg-count');
+            const totalInspections = document.getElementById('stat-total-inspections');
+            const pendingRequests = document.getElementById('stat-pending-requests');
+
+            tbody.innerHTML = '';
+
+            // Update Total Inspections count to match number of contact messages
+            if (totalInspections) {
+                totalInspections.textContent = messages.length;
+            }
+
+            // Update Pending Requests count to match number of messages with Pending payment status
+            const pendingCount = messages.filter(msg => (msg.paymentStatus || 'Pending') === 'Pending').length;
+            if (pendingRequests) {
+                pendingRequests.textContent = pendingCount;
+            }
+
+            if (msgCount) {
+                msgCount.textContent = messages.length;
+            }
+
+            if (messages.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            } else {
+                emptyState.style.display = 'none';
+            }
+
+            // Filter out enquiry messages - only show non-enquiry messages on dashboard
+            const dashboardMessages = messages.filter(msg => !msg.isEnquiry);
+
+            if (dashboardMessages.length === 0) {
+                emptyState.style.display = 'block';
+                tbody.innerHTML = '';
+                return;
+            }
+
+            dashboardMessages.forEach(msg => {
+                const tr = document.createElement('tr');
+
+                // Determine badge style
+                const isPaid = msg.paymentStatus === 'Done';
+                const badgeClass = isPaid ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+                const badgeText = isPaid ? 'Paid' : 'Pending';
+                const badgeStyle = isPaid
+                    ? 'background: #dcfce7; color: #166534;'
+                    : 'background: #fef9c3; color: #854d0e;';
+
+                tr.innerHTML = `
+                    <td>${msg.date}</td>
+                    <td><div style="font-weight: 500;">${msg.name}</div><div style="font-size: 0.8rem; color: #64748b;">${msg.city || ''}</div></td>
+                    <td>
+                        <div><a href="mailto:${msg.email}" style="color: var(--color-primary);">${msg.email}</a></div>
+                        <div style="font-size: 0.85rem; margin-top: 2px;">${msg.phone}</div>
+                    </td>
+                    <td><span style="background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">${msg.service}</span></td>
+                    <td style="max-width: 300px;">${msg.message}</td>
+                    <td>
+                        <button onclick="togglePayment(${msg.id})" style="${badgeStyle} padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; border: none; cursor: pointer; transition: opacity 0.2s;">
+                            ${badgeText}
+                        </button>
+                    </td>
+                    <td>
+                        <button onclick="markAsEnquiry(${msg.id})" style="background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; border: none; cursor: pointer; transition: opacity 0.2s;">
+                            Just Enquiry
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function togglePayment(id) {
+            const messages = JSON.parse(localStorage.getItem('mhc_contact_messages') || '[]');
+            const index = messages.findIndex(m => m.id === id);
+
+            if (index !== -1) {
+                // Toggle status
+                const current = messages[index].paymentStatus || 'Pending';
+                messages[index].paymentStatus = current === 'Done' ? 'Pending' : 'Done';
+
+                // Save and reload
+                localStorage.setItem('mhc_contact_messages', JSON.stringify(messages));
+                loadMessages();
+            }
+        }
+
+        function markAsEnquiry(id) {
+            const messages = JSON.parse(localStorage.getItem('mhc_contact_messages') || '[]');
+            const index = messages.findIndex(m => m.id === id);
+
+            if (index !== -1) {
+                // Mark as enquiry
+                messages[index].isEnquiry = true;
+
+                // Save and reload
+                localStorage.setItem('mhc_contact_messages', JSON.stringify(messages));
+                loadMessages();
+            }
+        }
+
+        function clearMessages() {
+            if (confirm('Are you sure you want to delete all messages?')) {
+                localStorage.removeItem('mhc_contact_messages');
+                loadMessages();
+            }
+        }
+
+        // Note: Stats are now auto-calculated from contact messages data
+        // Total Inspections = total number of messages
+        // Pending Requests = number of messages with Pending payment status
+
+        // Initial Load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMessages();
+        });
+    </script>
+</body>
+
+</html>

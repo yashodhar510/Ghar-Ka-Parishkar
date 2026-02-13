@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Ghar ka Parishkar</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar {
+            width: 250px;
+            background-color: var(--color-bg-dark);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: var(--spacing-xl);
+        }
+
+        .sidebar h3 {
+            color: white;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: var(--spacing-2xl);
+        }
+
+        .nav-link {
+            display: block;
+            color: rgba(255, 255, 255, 0.7);
+            padding: var(--spacing-md) 0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: white;
+        }
+
+        .settings-card {
+            background: white;
+            padding: var(--spacing-2xl);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .alert {
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .code-display {
+            background: #f8f9fa;
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-sm);
+            border: 2px dashed var(--color-border);
+            text-align: center;
+            margin: var(--spacing-lg) 0;
+        }
+
+        .code-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--color-primary);
+            letter-spacing: 0.1em;
+            font-family: 'Courier New', monospace;
+        }
+
+        .copy-btn {
+            margin-top: var(--spacing-md);
+            background: #6366f1;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn:hover {
+            background: #4f46e5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h3>Admin Panel</h3>
+        <nav style="margin-top: var(--spacing-2xl);">
+            <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="enquiry.html" class="nav-link"><i class="fas fa-question-circle"></i> Enquiries</a>
+            <a href="#" class="nav-link"><i class="fas fa-users"></i> Users</a>
+            <a href="reports.html" class="nav-link"><i class="fas fa-file-alt"></i> Reports</a>
+            <a href="settings.html" class="nav-link active"><i class="fas fa-cog"></i> Settings</a>
+            <a href="../index.html" class="nav-link" style="margin-top: var(--spacing-2xl); color: #ff6b7a;"><i
+                    class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <h1 style="margin-bottom: var(--spacing-xl);">Settings</h1>
+
+        <!-- Admin Secret Code Section -->
+        <div class="settings-card">
+            <h2 style="margin-bottom: var(--spacing-lg);">
+                <i class="fas fa-key" style="color: var(--color-primary);"></i> Admin Secret Code
+            </h2>
+
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <strong>Important:</strong> This secret code is required for creating new admin accounts. Keep it secure
+                and share only with trusted administrators.
+            </div>
+
+            <div class="code-display">
+                <p style="color: #64748b; margin-bottom: var(--spacing-sm); font-size: 0.9rem;">Current Secret Code</p>
+                <div class="code-value" id="currentCode">BNI123</div>
+                <button class="copy-btn" onclick="copyCode()">
+                    <i class="fas fa-copy"></i> Copy Code
+                </button>
+            </div>
+
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Warning:</strong> Changing the secret code will require all new admins to use the new code.
+                Existing admins are not affected.
+            </div>
+
+            <form id="changeCodeForm">
+                <div class="form-group">
+                    <label for="newCode">
+                        <i class="fas fa-lock"></i> New Secret Code
+                    </label>
+                    <input type="text" id="newCode" placeholder="Enter new secret code" required minlength="6">
+                    <p style="color: #64748b; font-size: 0.85rem; margin-top: var(--spacing-sm);">
+                        Minimum 6 characters. Use a combination of letters and numbers for better security.
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmCode">
+                        <i class="fas fa-check-circle"></i> Confirm New Secret Code
+                    </label>
+                    <input type="text" id="confirmCode" placeholder="Re-enter new secret code" required minlength="6">
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Update Secret Code
+                </button>
+            </form>
+        </div>
+
+        <!-- Additional Settings Section -->
+        <div class="settings-card">
+            <h2 style="margin-bottom: var(--spacing-lg);">
+                <i class="fas fa-sliders-h" style="color: var(--color-primary);"></i> General Settings
+            </h2>
+            <p style="color: #64748b;">Additional settings will be available here in future updates.</p>
+        </div>
+    </div>
+
+    <script>
+        // Load current secret code
+        function loadCurrentCode() {
+            const currentCode = localStorage.getItem('mhc_admin_secret_code') || 'BNI123';
+            document.getElementById('currentCode').textContent = currentCode;
+        }
+
+        // Copy code to clipboard
+        function copyCode() {
+            const code = document.getElementById('currentCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = event.target.closest('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                btn.style.background = '#10b981';
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '#6366f1';
+                }, 2000);
+            }).catch(err => {
+                alert('Failed to copy code: ' + err);
+            });
+        }
+
+        // Change secret code
+        document.getElementById('changeCodeForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const newCode = document.getElementById('newCode').value.trim();
+            const confirmCode = document.getElementById('confirmCode').value.trim();
+
+            // Validate codes match
+            if (newCode !== confirmCode) {
+                alert('Secret codes do not match! Please try again.');
+                return;
+            }
+
+            // Validate minimum length
+            if (newCode.length < 6) {
+                alert('Secret code must be at least 6 characters long.');
+                return;
+            }
+
+            // Confirm change
+            if (!confirm(`Are you sure you want to change the secret code to "${newCode}"?\n\nThis will affect all new admin registrations.`)) {
+                return;
+            }
+
+            // Save new code
+            localStorage.setItem('mhc_admin_secret_code', newCode);
+
+            // Update display
+            loadCurrentCode();
+
+            // Reset form
+            document.getElementById('changeCodeForm').reset();
+
+            // Show success message
+            alert('Secret code updated successfully!\n\nNew admins must use this code to register.');
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCurrentCode();
+        });
+    </script>
+</body>
+
+</html>
